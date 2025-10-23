@@ -1,17 +1,22 @@
 import express from "express";
-const app = express();
+import dotenv from "dotenv";
+import mongoose from "mongoose";
 import cors from "cors";
+import router from "./src/routes/userRoutes.js";
 
-const corsOptions = {
-    origin: ["http://localhost:5173"],          //the frontend address. It must be exact. No extra / at the end! 
-};
+dotenv.config();
 
-app.use(cors(corsOptions));
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(router);
 
-app.get("/car-brands", (req, res) => {
-    res.json({ carBrands: ["SAAB", "Volvo", "Mazda"] });
-});
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((error) => console.error("Error connecting to MongoDB:", error));
 
-app.listen(8080, () => {
-    console.log("Server is running on port: 8080");
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
