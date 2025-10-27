@@ -1,0 +1,58 @@
+.game-page-container {
+  padding-left: 250px;
+}
+
+.game-page-title {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.game-card-list {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.game-card {
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  text-align: center;
+  width: 170px;
+  border: 2px solid #ccc;
+}
+
+.game-card.selected {
+  border: 3px solid #007bff;
+}
+
+.game-card img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}
+
+.game-card-title {
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+
+.play-button {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  opacity: 1;
+  transition: all 0.2s;
+}
+
+.play-button:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
