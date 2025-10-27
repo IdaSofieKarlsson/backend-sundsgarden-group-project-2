@@ -1,30 +1,26 @@
-import { Link } from "react-router-dom";
+import "../styles/Navbar.css";
+import { NavbarData } from "./NavbarData.tsx";
 
 function Navbar() {
   return (
-    <div>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Login</Link>
-          </li>
-          <li>
-            <Link to="/register">Register Account</Link>
-          </li>
-          <li>
-            <Link to="/all-users">All Users</Link>
-          </li>
-          <li>
-            <Link to="/user-overview">User Overview</Link>
-          </li>
-          <li>
-            <Link to="/games">Games</Link>
-          </li>
-          <li>
-            <Link to="/demo-page">Demo Page</Link>
-          </li>
-        </ul>
-      </nav>
+    <div className="Navbar">
+      <ul className="NavbarList">
+        {NavbarData.map((val, key) => {
+          return (
+            <li
+              key={key}
+              className="row"
+              id={window.location.pathname === val.path ? "active" : ""}
+              onClick={() => {
+                window.location.pathname = val.path;
+              }}
+            >
+              {" "}
+              <div id="icon">{val.icon}</div> <div id="title">{val.title}</div>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
