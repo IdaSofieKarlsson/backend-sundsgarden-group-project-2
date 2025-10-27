@@ -1,10 +1,55 @@
-function GamePage() {
-    return <div>
-        <h1>Game page!</h1>
-        <p>This is the game page. Here you can choose the different games you want to play. <br />
-        I.e. the different timers you want to oggle... </p>
-        <p>When clicking a "game" (timer), we user the pop-up function to display the timer. </p>
-    </div>
+import React, { useEffect, useState } from "react";
+import GameCard from "../components/GameCard";
+import gameLogo from "../assets/game.png";
+import "../styles/GamePage.css";
+
+interface Game {
+  _id: string;
+  title: string;
+  image: string;
 }
+
+const GamePage: React.FC = () => {
+  const [games, setGames] = useState<Game[]>([]);
+  const [selectedGame, setSelectedGame] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("http://localhost:3001/api/games")
+      .then((res) => res.json())
+      .then((data) => setGames(data));
+  }, []);
+
+  return (
+    <div className="game-page-container">
+      <h1 className="game-page-title">Choose a game to play</h1>
+      <div className="game-card-list">
+        {games.map((game) => (
+          <GameCard
+            key={game._id}
+            title={game.title}
+            image={game.image || gameLogo}
+            selected={selectedGame === game._id}
+            onClick={() => setSelectedGame(game._id)}
+          />
+        ))}
+      </div>
+      <button
+        className="play-button"
+        disabled={!selectedGame}
+        onClick={() => {
+          if (selectedGame) {
+            alert(
+              `You selected ${
+                games.find((g) => g._id === selectedGame)?.title
+              }!`
+            );
+          }
+        }}
+      >
+        Play
+      </button>
+    </div>
+  );
+};
 
 export default GamePage;
