@@ -1,9 +1,16 @@
 import express from "express";
 
-import // insert controller functions here when needed
-"../controllers/userController.js";
+ // insert controller functions here when needed
+import {
+    getAllUsers,
+    getUserByEmail,
+    createUser,
+} from "../controllers/userController.js";
 
-const Router = express.Router();
+const router = express.Router();
 // Define routes here
+router.get("/users", getAllUsers);
+router.get("/users", getUserByEmail);
+router.post("/users", createUser);
 
-export default Router;
+export default router;
