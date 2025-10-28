@@ -1,7 +1,3 @@
-.game-page-container {
-  padding-left: 250px;
-}
-
 .game-page-title {
   text-align: center;
   margin-top: 2rem;
@@ -24,7 +20,7 @@
 }
 
 .game-card.selected {
-  border: 3px solid #007bff;
+  border: 2px solid #007bff;
 }
 
 .game-card img {

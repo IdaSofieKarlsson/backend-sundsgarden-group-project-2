@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import GameCard from "../components/GameCard";
 import gameLogo from "../assets/game.png";
 import "../styles/GamePage.css";
+import { useNavigate } from "react-router-dom";
 
 interface Game {
   _id: string;
@@ -12,6 +13,7 @@ interface Game {
 const GamePage: React.FC = () => {
   const [games, setGames] = useState<Game[]>([]);
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:3001/api/games")
@@ -38,11 +40,10 @@ const GamePage: React.FC = () => {
         disabled={!selectedGame}
         onClick={() => {
           if (selectedGame) {
-            alert(
-              `You selected ${
-                games.find((g) => g._id === selectedGame)?.title
-              }!`
-            );
+            const game = games.find((g) => g._id === selectedGame);
+            if (game) {
+              navigate("/games/timer", { state: { game } });
+            }
           }
         }}
       >
