@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import "../styles/userForm.css";
 
 const UserForm = () => {
     const [firstName, setFirstName] = useState("");
@@ -16,8 +17,8 @@ const UserForm = () => {
     }
 
     return (
-        <div className="" >
-            <form 
+        <div className="container-userform" >
+            <form className="container-form"
                 onSubmit={(e) => {
                     e.preventDefault();
                     createUser();
@@ -26,11 +27,13 @@ const UserForm = () => {
                 <h2>Register for access to play our games!</h2>
                 <p>First you have to register an account, then you can log in and play.</p>
                 <p>Note: this is a student assignment, we can see your password in our database, so pick something you never use anywhere else. "abc123" is ok.</p>
-                <label>
+                <label className="container-label">
+                    Email:{" "}
+                    <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="Your email"/>
                     First Name:{" "}
                     <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required placeholder="Your first name"/>
+                    Last Name:{" "}
                     <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required placeholder="Your last name"/>
-                    <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="Your email"/>
                 </label>
                 <button type="submit">Create Account</button>
             </form>        
