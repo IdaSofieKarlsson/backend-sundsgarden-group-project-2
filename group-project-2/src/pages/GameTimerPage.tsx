@@ -3,7 +3,7 @@ import gameLogo from "../assets/game.png";
 import { useLocation, useNavigate } from "react-router-dom";
 
 interface Game {
-  gameId: string;
+  _id: string;
   title: string;
   image: string;
 }

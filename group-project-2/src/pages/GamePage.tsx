@@ -3,6 +3,7 @@ import GameCard from "../components/GameCard";
 import gameLogo from "../assets/game.png";
 import "../styles/GamePage.css";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../api";
 
 interface Game {
   _id: string;
@@ -16,7 +17,7 @@ const GamePage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/games")
+    fetch(`${API_BASE_URL}/api/games`)
       .then((res) => res.json())
       .then((data) => setGames(data));
   }, []);

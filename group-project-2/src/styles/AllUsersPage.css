@@ -54,13 +54,13 @@
   font-weight: 600;
   color: #333;
   margin-bottom: 5px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .profile-lastname {
   font-size: 20px;
   color: #666;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 @media (max-width: 1200px) {
@@ -73,26 +73,26 @@
   .profiles-container {
     padding: 20px 10px;
   }
-  
+
   .profiles-row {
     gap: 20px;
   }
-  
+
   .profile-card {
     min-width: 150px;
     padding: 20px;
   }
-  
+
   .profile-image {
     width: 120px;
     height: 120px;
     font-size: 50px;
   }
-  
+
   .profile-name {
     font-size: 20px;
   }
-  
+
   .profile-lastname {
     font-size: 18px;
   }
