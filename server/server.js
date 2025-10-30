@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: "*", // your frontend URL
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true, // set to false if not using cookies/auth headers
   })
