@@ -1,7 +1,8 @@
+import UserForm from "../components/UserForm";
+
 function RegisterPage() {
     return <div>
-        <h1>Register page!</h1>
-        <p>This is the register page.</p>
+        <UserForm/>
     </div>
 }
 

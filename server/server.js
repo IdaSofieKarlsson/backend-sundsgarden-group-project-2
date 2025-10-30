@@ -2,17 +2,26 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
-
 import userRouter from "./src/routes/userRoutes.js";
 import gameRouter from "./src/routes/gameRoutes.js";
 
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
 app.use(express.json());
-app.use(userRouter);
+
+app.use(
+  cors({
+    origin: "*", // your frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // set to false if not using cookies/auth headers
+  })
+);
+
 app.use("/api/games", gameRouter);
+app.use("/api/users", userRouter);
 
 mongoose
   .connect(process.env.MONGO_URI)
