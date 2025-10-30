@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import "../styles/userForm.css";
+import API_BASE_URL from "../api";
 
 const UserForm = () => {
     const [firstName, setFirstName] = useState("");
@@ -9,7 +10,7 @@ const UserForm = () => {
     
     const createUser = async () => {
         try {
-            await axios.post("https://backend-sundsgarden-group-project-2-gules.vercel.app/api/users", { firstName, lastName, email });
+            await axios.post(`${API_BASE_URL}/api/users`, { firstName, lastName, email });
             alert("Account created");
         } catch (err) {
             console.error("Failed to create account: ", err);
