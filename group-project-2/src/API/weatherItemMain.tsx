@@ -277,9 +277,7 @@ function WeatherItemMain() {
   return (
     <div className="weather">
       <div className="weather__main">
-        <h2>
-          <i className="fa-solid fa-cloud-sun"></i>Weather
-        </h2>
+        
         <div>
           {weather && weather.current && (
             <p className="time">
@@ -316,48 +314,7 @@ function WeatherItemMain() {
           )}
         </div>
       </div>
-      <div className="weather__details">
-        {weather && weather.current && (
-          <WeatherItemDetail
-            icon="fa-solid fa-temperature-high"
-            color="#3fa5b8ff"
-            titel="Perceived temperature:"
-            info={`${weather.current.apparent_temperature} ${weather.current_units.apparent_temperature}`}
-          />
-        )}
-        {weather && weather.current && (
-          <WeatherItemDetail
-            icon="fa-solid fa-wind"
-            color="#7979a5ff"
-            titel="Wind speed:"
-            info={`${weather.current.wind_speed_10m} ${weather.current_units.wind_speed_10m}`}
-          />
-        )}
-        {weather && weather.current && (
-          <WeatherItemDetail
-            icon="fa-regular fa-compass"
-            color="#ad0000ff"
-            titel="Wind direction:"
-            info={`${degToCompass(weather.current.wind_direction_10m)}`}
-          />
-        )}
-        {weather && weather.current && (
-          <WeatherItemDetail
-            icon="fa-solid fa-sun"
-            color="#ffa653ff"
-            titel="Sunrise:"
-            info={`${getTimeFromISO(weather.daily.sunrise[0])}`}
-          />
-        )}
-        {weather && weather.current && (
-          <WeatherItemDetail
-            icon="fa-regular fa-sun"
-            color="#4a00acff"
-            titel="Sunset:"
-            info={`${getTimeFromISO(weather.daily.sunset[0])}`}
-          />
-        )}
-      </div>
+      
     </div>
   );
 }
