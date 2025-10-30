@@ -3,12 +3,8 @@ import type {
   WeatherIconType,
 } from "../interfaces/weatherType";
 import type { GeoCodingResponse } from "../interfaces/geoCoding";
-import WeatherItemDetail from "./weatherItemDetail";
-//import React from "react";
 import React, { useEffect } from "react";
 import { useState } from "react";
-
-// !!!!! if using weather icons, fix favicon link in index.html !!!!!
 
 function WeatherItemMain() {
   /*const location is the address that goes in .. and returns lat and lon. Note that 
@@ -81,30 +77,6 @@ function WeatherItemMain() {
     };
     fetchData();
   }, [geoData]);
-
-  //via help from chatGPT
-  function degToCompass(WindDirection: number): string {
-    const directions = [
-      "N",
-      "NNE",
-      "NE",
-      "ENE",
-      "E",
-      "ESE",
-      "SE",
-      "SSE",
-      "S",
-      "SSW",
-      "SW",
-      "WSW",
-      "W",
-      "WNW",
-      "NW",
-      "NNW",
-    ];
-    const index = Math.floor((WindDirection + 11.25) / 22.5) % 16;
-    return directions[index];
-  }
 
   const iconSnow: WeatherIconType = {
     icon: "fa-regular fa-snowflake",
@@ -271,9 +243,7 @@ function WeatherItemMain() {
   function getTimeFromISO(isoString: string): string {
     return isoString.split("T")[1]; // "19:21"
   }
-
-  //const percivedTemperature :string | null = `${weather.current.apparent_temperature} ${weather.current_units.apparent_temperature}`
-
+  
   return (
     <div className="weather">
       <div className="weather__main">
