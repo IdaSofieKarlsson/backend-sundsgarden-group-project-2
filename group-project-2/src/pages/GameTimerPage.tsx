@@ -18,7 +18,6 @@ const GameTimerPage: React.FC = () => {
   const [minutes, setMinutes] = useState(0);
   const [hours, setHours] = useState(0);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  // TODO: Replace with actual userId from auth context or props
   const userId = "6902160838611259d1c9d5b9"; // placeholder test user id
 
   useEffect(() => {
