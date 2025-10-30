@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import gameLogo from "../assets/game.png";
 import { useLocation, useNavigate } from "react-router-dom";
+// import API_BASE_URL from "../api";
 
 interface Game {
   _id: string;
@@ -16,6 +17,9 @@ const GameTimerPage: React.FC = () => {
   const [running, setRunning] = useState(false);
   const [minutes, setMinutes] = useState(0);
   const [hours, setHours] = useState(0);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  // TODO: Replace with actual userId from auth context or props
+  const userId = "6902160838611259d1c9d5b9"; // placeholder test user id
 
   useEffect(() => {
     let interval: number | undefined;
@@ -35,7 +39,54 @@ const GameTimerPage: React.FC = () => {
     };
   }, [running]);
 
-  const handleStartStop = () => setRunning((r) => !r);
+  // Helper to get current ISO string
+  const getNow = () => new Date().toISOString();
+
+  // Create session on start, update on stop
+  const handleStartStop = async () => {
+    if (!running) {
+      // Start: create session
+      try {
+        const res = await fetch(`http://localhost:3001/api/sessions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId,
+            gameId: game._id,
+            startTime: getNow(),
+          }),
+        });
+        if (!res.ok) throw new Error("Failed to create session");
+        const data = await res.json();
+        setSessionId(data._id);
+        setRunning(true);
+      } catch (err) {
+        alert("Could not start session: " + (err as Error).message);
+      }
+    } else {
+      // Stop: update session
+      if (!sessionId) return alert("No session to update");
+      try {
+        const duration = hours * 60 + minutes;
+        const res = await fetch(
+          `http://localhost:3001/api/sessions/${sessionId}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              endTime: getNow(),
+              duration,
+            }),
+          }
+        );
+        if (!res.ok) throw new Error("Failed to update session");
+        setRunning(false);
+        // Optionally: navigate or show a message
+      } catch (err) {
+        alert("Could not stop session: " + (err as Error).message);
+      }
+    }
+  };
   const handleExit = () => navigate("/games");
 
   return (
@@ -54,7 +105,7 @@ const GameTimerPage: React.FC = () => {
       <button onClick={handleStartStop} className="start-stop-btn">
         {running ? "Stop" : "Start"}
       </button>
-      <button onClick={handleExit} className="exit-btn">
+      <button onClick={handleExit} className="exit-btn" disabled={running}>
         Exit
       </button>
     </div>

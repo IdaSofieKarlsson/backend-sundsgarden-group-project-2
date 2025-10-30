@@ -2,7 +2,7 @@ export const NavbarData = [
   {
     title: "Profile",
     icon: "👤",
-    path: "/profile",
+    path: "/",
   },
   {
     title: "Users",
