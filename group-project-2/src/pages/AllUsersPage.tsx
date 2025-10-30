@@ -8,6 +8,7 @@ import emmaImg from "../assets/images/emma.avif";
 import gustavImg from "../assets/images/gustav.jpg";
 import annaImg from "../assets/images/anna.png";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Profile {
   firstName: string;
@@ -17,6 +18,8 @@ interface Profile {
 }
 
 const AllUsersPage = () => {
+  
+  
   const [profiles, setProfiles] = useState<Profile[]>([
     {
       firstName: "Erik",
@@ -62,7 +65,7 @@ const AllUsersPage = () => {
       image: annaImg,
     },
   ]);
-
+  /*
   const addUser = () => {
     const firstName = "Add firstname:";
     const lastName = "Add lastname:";
@@ -72,11 +75,17 @@ const AllUsersPage = () => {
       setProfiles([...profiles, { firstName, lastName, initials }]);
     }
   };
+  */
+  const navigate = useNavigate();
+  const navToRegPage = () => {
+    
+    navigate("/");
+  };
 
   return (
     <div>
       <h1>All Users</h1>
-      <button onClick={addUser}>Add User</button>
+      <button onClick={navToRegPage}>Add User</button>
 
       <div className="profiles-container">
         <div className="profiles-row">

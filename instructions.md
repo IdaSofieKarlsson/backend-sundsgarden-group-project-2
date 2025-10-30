@@ -8,3 +8,6 @@ Make sure that you are in the correct fold. Type cd and the folder name in the t
 Do you get strange errors, red lines under the code everywhere? 
 - cd into correct folder
 - npm install       installs everything according to package.json, that is not already in place
+
+## ERD
+Entity Relations Diagram can be found as a png file under /public/
