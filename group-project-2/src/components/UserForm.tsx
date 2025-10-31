@@ -16,7 +16,7 @@ const UserForm = () => {
         try {
             await axios.post(`${API_BASE_URL}/api/users`, { firstName, lastName, email });
             alert("Account created");
-            navigate("/all-users");
+            navigate("/users");
         } catch (err) {
             console.error("Failed to create account: ", err);
         }
