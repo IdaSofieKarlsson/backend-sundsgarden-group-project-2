@@ -1,0 +1,17 @@
+.container-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+h2, a {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: black;
+    font-size: medium;
+    font-weight: 400;
+}
+
+a:hover {
+    color:rgb(26, 104, 106);
+    cursor: crosshair;
+}
