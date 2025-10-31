@@ -20,7 +20,7 @@ interface Profile {
 const AllUsersPage = () => {
   
   
-  const [profiles, setProfiles] = useState<Profile[]>([
+  const [profiles, _setProfiles] = useState<Profile[]>([
     {
       firstName: "Erik",
       lastName: "Andersson",
@@ -79,7 +79,7 @@ const AllUsersPage = () => {
   const navigate = useNavigate();
   const navToRegPage = () => {
     
-    navigate("/");
+    navigate("/user-overview");
   };
 
   return (
