@@ -32,14 +32,15 @@ const UserForm = () => {
             <form className="container-form" onSubmit={handleSubmit}>
                 <h2>Register to play our games!</h2>
                 <label className="container-label">
-                    Email:{" "}
+                    Email *{" "}
                     <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="Your email"/>
-                    First Name:{" "}
+                    First Name *{" "}
                     <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required placeholder="Your first name"/>
-                    Last Name:{" "}
+                    Last Name *{" "}
                     <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required placeholder="Your last name"/>
                 </label>
-                <button type="submit">Register Account</button>
+                <div className="container-button"><button type="submit">Register Account</button></div>
+                
             </form>        
         </div>
     );
