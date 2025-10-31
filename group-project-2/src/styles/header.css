@@ -1,3 +1,38 @@
+/*styleing for both components*/
 .container-header {
     display: flex;
+    justify-items: space-between;
+}
+
+/*styling for weather API*/
+.container-weather {
+    display: flex;
+    align-items: center;
+    justify-content:space-between;
+}
+
+p, input, h3, i {
+    margin-right: 15px;
+}
+
+/*styling for search bar*/
+.container-search-field {
+    display: flex;
+    max-width: 250px;
+    width: 100%;
+    min-height: 25px;
+    justify-self: flex-end;
+    margin-right: 0px;
+
+    position: "relative";
+    width: "250px";
+    margin: "40px auto";
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: "16px";
 }

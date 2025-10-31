@@ -19,7 +19,7 @@ function SearchUser() {
       )
     : [];
 
-  return (
+    return (
     <div style={{ position: "relative", width: "250px", margin: "40px auto" }}>
       <input
         type="text"

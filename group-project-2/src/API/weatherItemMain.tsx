@@ -245,10 +245,7 @@ function WeatherItemMain() {
   }
   
   return (
-    <div className="weather">
-      <div className="weather__main">
-        
-        <div>
+    <div className="container-weather">
           {weather && weather.current && (
             <p className="time">
               Local time: {`${getTimeFromISO(weather.current.time)}`}
@@ -264,7 +261,7 @@ function WeatherItemMain() {
             />
           </div>
           {weather && weather.current && (
-            <h1>
+            <h3>
               <i
                 className={
                   weatherCodeToText(weather.current.weather_code).icon.icon
@@ -277,14 +274,11 @@ function WeatherItemMain() {
               {weather.current.temperature_2m}{" "}
               {weather.current_units.temperature_2m}
               <br></br>
-            </h1>
+            </h3>
           )}
           {weather && weather.current && (
             <p>{weatherCodeToText(weather.current.weather_code).weather}</p>
           )}
-        </div>
-      </div>
-      
     </div>
   );
 }
