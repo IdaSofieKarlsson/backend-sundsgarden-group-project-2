@@ -6,5 +6,5 @@ Set up project file structur for the whole project. Folder "server" contains bac
 Created navigation structure, with header and footer. 
 
 # Graphs log 2025,  Silvia
- using the demo page in /pages/DemoPage.tsx frontend
+ using the demo page in /pages/UserOverviewPage.tsx frontend
  npm install chart.js 
