@@ -1,20 +1,52 @@
-
 .container-userform {
     display: flex;
     flex-direction: column;
-
+    justify-content: center;
+    align-items: center;
+    min-width: 800px;
+    width: 100%;
+    min-height: 800px;
+    height: 100%;
+    margin: auto;
+    margin-top: 10px;
+    border-radius: 3%;
+    background-color: rgb(208, 205, 205);
 }
 
 .container-form {
     display: flex;
     flex-direction: column;
-    width: 50%;
+    min-width: 50%;
+    min-height: 50%;
     align-self: center;
-    background-color: lightgray;
 }
 
 .container-label {
     display: flex;
     flex-direction: column;
-    /*justify-content: flex-start;*/
+    align-items: flex-start; 
+}
+
+label, input, button, h2 {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    width: 100%; 
+}
+
+.container-button {
+    max-width: 200px;
+    width: 100%;
+    min-height: 25px;
+    height: 100%;
+    align-self: flex-end;
+}
+
+button {
+    background-color: rgb(17, 47, 48);
+    color: white;
+}
+
+button:hover {
+    background-color: rgb(54, 138, 141);
+    color: white;  
 }

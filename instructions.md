@@ -10,4 +10,4 @@ Do you get strange errors, red lines under the code everywhere?
 - npm install       installs everything according to package.json, that is not already in place
 
 ## ERD
-Entity Relations Diagram can be found as a png file under /public/
+Entity relationship diagram (ERD) can be found as a png file under /group-project-2/public/er-group-project-2.drawio.png
