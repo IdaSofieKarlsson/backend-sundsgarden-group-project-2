@@ -23,18 +23,18 @@ function AllUsersPage() {
 
   return (
     <div>
-      <div>
-      <button onClick={navToRegPage}>Add User</button>
-    </div>
-      <h2>All Users</h2>
-
-      {users.map(user => (
-        <UserProfile
-          key={user._id}
-          firstName={user.firstName}
-          lastName={user.lastName}
-        />
-      ))}
+      <div className="container-btn-add-user-on-all-users-page">
+        <button className="btn-add-user-on-all-users-page" onClick={navToRegPage}>Add User</button>
+      </div>
+      <div className="profiles-container">
+        {users.map(user => (
+          <UserProfile
+            key={user._id}
+            firstName={user.firstName}
+            lastName={user.lastName}
+          />
+        ))}
+      </div>
     </div>
   );
 }

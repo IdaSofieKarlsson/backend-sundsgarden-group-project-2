@@ -4,12 +4,31 @@
   box-sizing: border-box;
 }
 
+.container-btn-add-user-on-all-users-page {
+  max-width: 200px;
+  width: 100%;
+  min-height: 25px;
+  height: 100%;
+  align-self: flex-end;
+}
+.btn-add-user-on-all-users-page {
+  background-color: rgb(17, 47, 48);
+  color: white;
+}
+
+b.btn-add-user-on-all-users-pageutton:hover {
+    background-color: rgb(54, 138, 141);
+    color: white;  
+}
+
+
 .profiles-container {
-  min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  padding: 40px 20px;
+  flex-wrap: wrap;
+  gap: 16px;        /* space between cards */
+  justify-content: flex-start; /* or center if you prefer */
+  margin-top: 20px;
+  min-height: 100vh;
   background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
 }
 .profiles-row {
@@ -49,7 +68,7 @@
   object-fit: cover;
 }
 
-.profile-name {
+.profile-firstname {
   font-size: 24px;
   font-weight: 600;
   color: #333;

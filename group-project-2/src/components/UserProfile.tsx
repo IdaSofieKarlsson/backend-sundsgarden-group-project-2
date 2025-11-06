@@ -2,9 +2,9 @@ import type { UserProfileProps } from "../interfaces/UserProfileProps ";
 
 function UserProfile({ firstName, lastName }: UserProfileProps) {
   return (
-    <div>
-      <h3>{firstName}</h3>
-      <h3>{lastName}</h3>
+    <div className="profile-card">
+      <h3 className="profile-firstname">{firstName}</h3>
+      <h3 className="profile-lastname">{lastName}</h3>
     </div>
   );
 }
