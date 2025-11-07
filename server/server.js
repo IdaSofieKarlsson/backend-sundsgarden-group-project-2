@@ -21,6 +21,14 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+  );
+  next();
+});
+
 app.use("/api/games", gameRouter);
 app.use("/api/users", userRouter);
 app.use("/api/sessions", sessionRouter);

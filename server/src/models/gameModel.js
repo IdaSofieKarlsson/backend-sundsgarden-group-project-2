@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 
 const gameSchema = new mongoose.Schema({
-  gameId: Number,
-  name: String,
+  title: String,
+  image: String
 });
 
-const Game = mongoose.model("Game", gameSchema);
+const Game = mongoose.model("Game", gameSchema, "games");
 
 export default Game;
