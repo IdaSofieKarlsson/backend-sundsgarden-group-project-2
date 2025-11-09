@@ -21,7 +21,6 @@ b.btn-add-user-on-all-users-pageutton:hover {
     color: white;  
 }
 
-
 .profiles-container {
   display: flex;
   flex-wrap: wrap;
@@ -51,6 +50,7 @@ b.btn-add-user-on-all-users-pageutton:hover {
 .profile-card:hover {
   transform: translateY(-10px);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  cursor: grab;
 }
 
 .profile-image {

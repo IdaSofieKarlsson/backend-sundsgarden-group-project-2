@@ -30,6 +30,7 @@ function AllUsersPage() {
         {users.map(user => (
           <UserProfile
             key={user._id}
+            _id={user._id}
             firstName={user.firstName}
             lastName={user.lastName}
           />
