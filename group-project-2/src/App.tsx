@@ -23,7 +23,7 @@ function App() {
         <Routes>
           <Route path="/" element={<RegisterPage />} />
           <Route path="/users" element={<AllUsersPage />} />
-          <Route path="/user-overview" element={<UserOverviewPage />} />
+          <Route path="/user-overview/:id" element={<UserOverviewPage />} />
           <Route path="/games" element={<GamePage />} />
           <Route path="/games/timer" element={<GameTimer />} />
           <Route path="/demo-page" element={<DemoPage />} />
