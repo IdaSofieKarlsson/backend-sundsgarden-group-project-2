@@ -1,4 +1,5 @@
 // import the users from models and define controller functions
+
 import User from "../models/userModel.js";
 
 //can now take this function and user elsewhere
@@ -12,19 +13,21 @@ export const getAllUsers = async (req, res) => {
         });
     }
 };
-//function for getting user by email from db and comparing email with password for login
-export const getUserByEmail = async (req, res) => {
+//function for getting user by id from db
+export const getUserByID = async (req, res) => {
+    const id = req.params.id;
+    
     try {
-        const filteredUsers = await User.find({ email: "a@exemple.com" });
-        res.json(filteredUsers);
+        const user = await User.findById({ _id: id });
+        res.json(user);
     } catch (error) {
         res.status(500).json({
-            error: "Invalid email address or not a registered user by this email",
+            error: "Invalid input, cannot find a user by this ID.",
         });
     }
 };
 
-export const createUser =  async (req, res) => {
+export const createUser = async (req, res) => {
     try {
         const newUser = new User(req.body);
         await newUser.save();
