@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../api";
 import type { User } from "../interfaces/user.ts";
 
 function SearchUser() {
   const [users, setUsers] = useState<User[]>([]);
   const [search, setSearch] = useState("");
+
+  const navigate = useNavigate();
+
+  const goToUser = (_id: string) => {
+    navigate(`/user-overview/${_id}`);
+  };
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/users`)
@@ -63,7 +70,7 @@ function SearchUser() {
                 cursor: "pointer",
                 borderBottom: "1px solid #eee",
               }}
-              onClick={() => alert(`You selected ${user.firstName}`)}
+              onClick={() => goToUser(user._id)}
               onMouseDown={(e) => e.preventDefault()} // prevents input blur
             >
               {user.firstName} {user.lastName}
