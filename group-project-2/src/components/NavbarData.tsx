@@ -1,7 +1,7 @@
 export const NavbarData = [
   {
-    title: "Profile",
-    icon: "👤",
+    title: "Register",
+    icon: "🖊️",
     path: "/",
   },
   {

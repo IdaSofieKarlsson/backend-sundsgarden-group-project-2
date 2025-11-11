@@ -1,18 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../api";
 import type { User } from "../interfaces/user.ts";
+import { useUser } from "../contexts/UserContext";
 
-function SearchUser() {
+function SelectPlayerToPlayGame() {
   const [users, setUsers] = useState<User[]>([]);
   const [search, setSearch] = useState("");
-
-  const navigate = useNavigate();
-
-  const goToUser = (_id: string) => {
-    navigate(`/user-overview/${_id}`);
-    setSearch("");
-  };
+  const { setActiveUser } = useUser();
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/users`)
@@ -27,8 +21,13 @@ function SearchUser() {
       )
     : [];
 
+  const handleSelectUser = (user: User) => {
+    setActiveUser(user);
+    setSearch("");
+  };
+
   return (
-    <div style={{ position: "relative", width: "250px", margin: "40px auto" }}>
+    <div style={{ position: "relative", width: "250px", margin: "20px auto" }}>
       <input
         type="text"
         placeholder="Search user by first name..."
@@ -71,7 +70,7 @@ function SearchUser() {
                 cursor: "pointer",
                 borderBottom: "1px solid #eee",
               }}
-              onClick={() => goToUser(user._id)}
+              onClick={() => handleSelectUser(user)}
               onMouseDown={(e) => e.preventDefault()} // prevents input blur
             >
               {user.firstName} {user.lastName}
@@ -103,4 +102,4 @@ function SearchUser() {
   );
 }
 
-export default SearchUser;
+export default SelectPlayerToPlayGame;

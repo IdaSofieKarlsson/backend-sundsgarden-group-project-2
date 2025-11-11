@@ -8,15 +8,13 @@ import DemoPage from "./pages/DemoPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
-
-
-
+import { UserProvider } from "./contexts/UserContext";
 
 //implements { BrowserRouter }
 
 function App() {
   return (
-    <>
+    <UserProvider>
       <BrowserRouter>
         <Header />
         <Navbar></Navbar>
@@ -30,7 +28,7 @@ function App() {
         </Routes>
         <Footer />
       </BrowserRouter>
-    </>
+    </UserProvider>
   );
 }
 
