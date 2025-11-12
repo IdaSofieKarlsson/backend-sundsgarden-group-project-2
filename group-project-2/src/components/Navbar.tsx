@@ -18,7 +18,7 @@ function Navbar() {
                   ? "active"
                   : val.path === "/users" &&
                     (location.pathname.startsWith("/users") ||
-                      location.pathname === "/all-users")
+                      location.pathname.startsWith("/user-overview"))
                   ? "active"
                   : location.pathname === val.path
                   ? "active"

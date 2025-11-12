@@ -2,15 +2,17 @@ import express from "express";
 
 
 import {
-  createSession,
+  //createSession,
   updateSession,
   getSessionsByUser,
   getSessionsByGame,
+  getOrCreateSession,
 } from "../controllers/sessionController.js";
 
 const sessionRouter = express.Router();
 
-sessionRouter.post("/", createSession);
+//sessionRouter.post("/", createSession);
+sessionRouter.post("/get-or-create", getOrCreateSession);
 sessionRouter.patch("/:sessionId", updateSession);
 sessionRouter.get("/user/:userId", getSessionsByUser);
 sessionRouter.get("/game/:gameId", getSessionsByGame);

@@ -1,0 +1,19 @@
+.user-selection-panel {
+  position: fixed;
+  top: 650px;
+  right: 250px;
+  z-index: 1000;
+}
+
+.user-selection-instruction {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.user-selection-dropdown {
+  margin-top: 0;
+}
+
+.user-selection-dropdown > div {
+  margin: 0 !important;
+}

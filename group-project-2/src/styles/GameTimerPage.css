@@ -1,0 +1,87 @@
+.game-timer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 20px;
+}
+
+.game-timer-title {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.game-timer-img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+.stopwatch {
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stopwatch-time {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: monospace;
+}
+
+.time-value {
+  font-size: 4rem;
+  font-weight: bold;
+}
+
+.time-separator {
+  font-size: 4rem;
+  font-weight: bold;
+}
+
+.time-label {
+  font-size: 1rem;
+  font-weight: normal;
+  color: #666;
+}
+
+.start-stop-btn,
+.exit-btn {
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  margin: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.start-stop-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.start-stop-btn:hover {
+  background-color: #45a049;
+}
+
+.exit-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.exit-btn:hover:not(:disabled) {
+  background-color: #da190b;
+}
+
+.exit-btn:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
