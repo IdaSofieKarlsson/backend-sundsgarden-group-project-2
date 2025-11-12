@@ -1,5 +1,6 @@
 import Session from "../models/sessionModel.js";
 import { z } from "zod";
+import mongoose from 'mongoose';
 
 // Get or create an active session for a user and game
 export const getOrCreateSession = async (req, res) => {
@@ -134,5 +135,44 @@ export const getSessionsByGame = async (req, res) => {
     res.status(200).json(sessions);
   } catch (error) {
     res.status(500).json({ message: "Error fetching sessions", error });
+  }
+};
+
+// src/controllers/sessionController.js
+
+
+export const getPlaytimePerGame = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    console.log("userId from params:", userId);
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid userId" });
+    }
+    const objectUserId = new mongoose.Types.ObjectId(userId);
+
+    const sessions = await Session.find({ userId: objectUserId });
+    console.log("Sessions found:", sessions.length);
+
+    // Summera minuter per game
+    const playtimeMap = {};
+    sessions.forEach((s) => {
+      const gameId = s.gameId.toString();
+      playtimeMap[gameId] = (playtimeMap[gameId] || 0) + (s.duration || 0);
+    });
+
+    // Fasta Game 1–4
+    const gameIds = Object.keys(playtimeMap).slice(0, 4);
+    const result = [
+      { _id: "Game 1", totalMinutes: playtimeMap[gameIds[0]] || 0 },
+      { _id: "Game 2", totalMinutes: playtimeMap[gameIds[1]] || 0 },
+      { _id: "Game 3", totalMinutes: playtimeMap[gameIds[2]] || 0 },
+      { _id: "Game 4", totalMinutes: playtimeMap[gameIds[3]] || 0 },
+    ];
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error fetching playtime data:", error);
+    res.status(500).json({ message: "Error fetching playtime data", error });
   }
 };

@@ -52,7 +52,7 @@ export default function UserOverviewPage() {
       </div>
 
       <div className="chart-grid">
-        <HorizontalBarChart />
+        <HorizontalBarChart/>
         <GameProgressList />
         <GameScatterChart />
         <UserActivityLineChart />
