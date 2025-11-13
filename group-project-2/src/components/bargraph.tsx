@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import * as Chart from 'chart.js';
+import React, { useEffect, useRef, useState } from "react";
+import * as Chart from "chart.js";
 
 // TypeScript interface
 interface GameMinutes {
@@ -10,35 +10,35 @@ interface GameMinutes {
 const MinutesPerGameChart: React.FC = () => {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstanceRef = useRef<Chart.Chart | null>(null);
-  
-  const [gameData, _setGameData] = useState<GameMinutes[]>([
-    { gameName: 'Game 1', minutes: 40 },
-    { gameName: 'Game 2', minutes: 53 },
-    { gameName: 'Game 3', minutes: 26 },
-    { gameName: 'Game 4', minutes: 45 }
-  ]);
 
-  // Fetch data from backend - uncomment when ready
-  /*
+  const [gameData, setGameData] = useState<GameMinutes[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchGameData = async () => {
       try {
-        const response = await fetch('/api/game-minutes');
+        const response = await fetch(
+          "http://localhost:3001/api/sessions/minutes-per-game"
+        );
+        if (!response.ok) throw new Error("Failed to fetch game minutes data");
         const data: GameMinutes[] = await response.json();
         setGameData(data);
+        setLoading(false);
       } catch (error) {
-        console.error('Error fetching game data:', error);
+        console.error("Error fetching game data:", error);
+        setError("Failed to load game data");
+        setLoading(false);
       }
     };
 
     fetchGameData();
   }, []);
-  */
 
   useEffect(() => {
     if (chartRef.current) {
-      const ctx = chartRef.current.getContext('2d');
-      
+      const ctx = chartRef.current.getContext("2d");
+
       if (!ctx) return;
 
       // Destroy existing chart
@@ -47,86 +47,93 @@ const MinutesPerGameChart: React.FC = () => {
       }
 
       // Find max value for scaling
-      const maxMinutes = Math.max(...gameData.map(g => g.minutes));
+      const maxMinutes = Math.max(...gameData.map((g) => g.minutes));
 
       // Create new chart
       chartInstanceRef.current = new Chart.Chart(ctx, {
-        type: 'bar',
+        type: "bar",
         data: {
-          labels: gameData.map(g => g.gameName),
-          datasets: [{
-            label: 'Minutes',
-            data: gameData.map(g => g.minutes),
-            backgroundColor: '#c0c0c0',
-            borderColor: '#000000',
-            borderWidth: 3,
-            barThickness: 60
-          }]
+          labels: gameData.map((g) => g.gameName),
+          datasets: [
+            {
+              label: "Minutes",
+              data: gameData.map((g) => g.minutes),
+              backgroundColor: "#c0c0c0",
+              borderColor: "#000000",
+              borderWidth: 2,
+              barThickness: 40,
+            },
+          ],
         },
         options: {
-          indexAxis: 'y',
+          indexAxis: "y",
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              display: false
+              display: false,
             },
             tooltip: {
-              enabled: false
-            }
+              enabled: false,
+            },
           },
           scales: {
             x: {
               display: false,
-              max: maxMinutes * 1.5
+              max: maxMinutes * 1.5,
             },
             y: {
               grid: {
-                display: false
+                display: false,
               },
               ticks: {
                 font: {
-                  size: 28,
-                  weight: 'bold',
-                  family: 'Arial, sans-serif'
+                  size: 16,
+                  weight: "bold",
+                  family: "Arial, sans-serif",
                 },
-                color: '#000000',
-                padding: 20
-              }
-            }
+                color: "#000000",
+                padding: 12,
+              },
+            },
           },
           layout: {
             padding: {
               left: 20,
               right: 0,
               top: 0,
-              bottom: 0
-            }
-          }
+              bottom: 0,
+            },
+          },
         },
-        plugins: [{
-          id: 'customLabels',
-          afterDatasetsDraw(chart: any) {
-            const { ctx, data, scales } = chart;
-            
-            ctx.save();
-            ctx.font = 'bold 24px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = '#000000';
+        // plugin to show minutes played next to the bars, uncomment if needed
+        /*plugins: [
+          {
+            id: "customLabels",
+            afterDatasetsDraw(chart: any) {
+              const { ctx, data, scales } = chart;
 
-            data.datasets[0].data.forEach((value: number, index: number) => {
-              const y = scales.y.getPixelForValue(index);
-              const barWidth = scales.x.getPixelForValue(value) - scales.x.getPixelForValue(0);
-              
-              // Draw minutes text in the white part of the bar
-              const textX = scales.x.left + barWidth + 100;
-              ctx.fillText(`${value} min`, textX, y);
-            });
+              ctx.save();
+              ctx.font = "bold 16px Arial";
+              ctx.textAlign = "center";
+              ctx.textBaseline = "middle";
+              ctx.fillStyle = "#000000";
 
-            ctx.restore();
-          }
-        }]
+              data.datasets[0].data.forEach((value: number, index: number) => {
+                const y = scales.y.getPixelForValue(index);
+                const barWidth =
+                  scales.x.getPixelForValue(value) -
+                  scales.x.getPixelForValue(0);
+
+                // Draw minutes text in the white part of the bar
+                const textX = scales.x.left + barWidth + 60;
+                ctx.fillText(`${value} min`, textX, y);
+              });
+
+              ctx.restore();
+            },
+          },
+        ],*/
       });
     }
 
@@ -137,28 +144,65 @@ const MinutesPerGameChart: React.FC = () => {
     };
   }, [gameData]);
 
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "300px",
+          fontSize: "18px",
+        }}
+      >
+        Loading game data...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "300px",
+          fontSize: "18px",
+          color: "red",
+        }}
+      >
+        {error}
+      </div>
+    );
+  }
+
   return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '100vh',
-      padding: '20px',
-      backgroundColor: '#f5f5f5'
-    }}>
-      <div style={{
-        backgroundColor: '#d9d9d9',
-        padding: '60px 80px',
-        borderRadius: '20px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        width: '100%',
-        maxWidth: '1200px'
-      }}>
-        <div style={{ 
-          position: 'relative', 
-          height: '400px',
-          width: '100%'
-        }}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "20px",
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "#d9d9d9",
+          padding: "5px 5px",
+          borderRadius: "12px",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          width: "100%",
+          maxWidth: "500px",
+        }}
+      >
+        <div
+          style={{
+            position: "relative",
+            height: "300px",
+            width: "100%",
+          }}
+        >
           <canvas ref={chartRef}></canvas>
         </div>
       </div>

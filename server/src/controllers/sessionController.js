@@ -186,12 +186,10 @@ export const getTotalTimeByUser = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in getTotalTimeByUser:", error);
-    res
-      .status(500)
-      .json({
-        message: "Error fetching total time",
-        error: error.message || error,
-      });
+    res.status(500).json({
+      message: "Error fetching total time",
+      error: error.message || error,
+    });
   }
 };
 
@@ -245,5 +243,40 @@ export const getLeaderboard = async (req, res) => {
   } catch (error) {
     console.error("Error fetching leaderboard:", error);
     res.status(500).json({ message: "Error fetching leaderboard", error });
+  }
+};
+
+// Get total minutes played per game
+export const getMinutesPerGame = async (req, res) => {
+  try {
+    const Game = (await import("../models/gameModel.js")).default;
+
+    const games = await Game.find();
+
+    const gameMinutes = [];
+
+    for (const game of games) {
+      const result = await Session.aggregate([
+        {
+          $match: { gameId: game._id },
+        },
+        {
+          $group: {
+            _id: null,
+            totalMinutes: { $sum: "$duration" },
+          },
+        },
+      ]);
+
+      gameMinutes.push({
+        gameName: game.title,
+        minutes: result.length > 0 ? result[0].totalMinutes : 0,
+      });
+    }
+
+    res.status(200).json(gameMinutes);
+  } catch (error) {
+    console.error("Error fetching minutes per game:", error);
+    res.status(500).json({ message: "Error fetching minutes per game", error });
   }
 };
