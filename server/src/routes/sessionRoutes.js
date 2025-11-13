@@ -7,6 +7,7 @@ import {
   getSessionsByGame,
   getOrCreateSession,
   getTotalTimeByUser,
+  getLeaderboard,
 } from "../controllers/sessionController.js";
 
 const sessionRouter = express.Router();
@@ -17,5 +18,6 @@ sessionRouter.patch("/:sessionId", updateSession);
 sessionRouter.get("/user/:userId", getSessionsByUser);
 sessionRouter.get("/game/:gameId", getSessionsByGame);
 sessionRouter.get("/total-time", getTotalTimeByUser);
+sessionRouter.get("/leaderboard", getLeaderboard);
 
 export default sessionRouter;
