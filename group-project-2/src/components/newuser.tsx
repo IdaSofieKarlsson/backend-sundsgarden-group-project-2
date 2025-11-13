@@ -1,34 +1,42 @@
-import React, { useState } from "react"; // add uueEffect when used
+import React, { useState, useEffect } from "react"; 
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
+import API_BASE_URL from "../api";
 
 // TypeScript interface
-//interface TimeData {
-//  totalMinutes: number;
-//}
+interface TotalTimeResponse {
+  userId: string;
+  totalSeconds: number;
+  perGame: { gameId: string; totalSeconds: number }[];
+}
 
 const TotalTimeDashboard: React.FC = () => {
-  const [totalTime, _setTotalTime] = useState<number>(164);
+  const [totalTime, setTotalTime] = useState<number>(0);
   const navigate = useNavigate();
   const { activeUser } = useUser();
 
-  // Fetch data from backend - uncomment when ready
-  /*
+  //Fetch data from backend
   useEffect(() => {
     const fetchTotalTime = async () => {
+    if (!activeUser?._id) return; // wait until user is selected
+
       try {
-        const response = await fetch('/api/total-time');
-        const data: TimeData = await response.json();
-        setTotalTime(data.totalMinutes);
+        const response = await fetch(`${API_BASE_URL}/api/sessions/total-time?userId=${activeUser._id}`);
+        if (!response.ok) {
+          const text = await response.text();
+          console.error("Total time fetch failed:", response.status, text);
+          return;
+        }
+        const data: TotalTimeResponse = await response.json();
+        setTotalTime(data.totalSeconds ?? 0);
       } catch (error) {
         console.error('Error fetching total time:', error);
       }
     };
 
     fetchTotalTime();
-  }, []);
-  */
-
+  }, [activeUser]);
+  
   const handleChoosePlayer = () => {
     console.log("Choose new player clicked");
     navigate("/users");
