@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import gameLogo from "../assets/game.png";
 import ActiveUserDisplay from "../components/ActiveUserDisplay";
 import "../styles/GameTimerPage.css";
@@ -19,14 +19,19 @@ const GameTimerPage: React.FC = () => {
   const { activeUser } = useUser();
 
   const [running, setRunning] = useState(false);
-  const [minutes, setMinutes] = useState(0);
-  const [hours, setHours] = useState(0);
+  const [totalMinutes, setTotalMinutes] = useState(0);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [sessionStartMinutes, setSessionStartMinutes] = useState(0);
   const userId = activeUser?._id || "6902160838611259d1c9d5b9"; // Use active user or fallback to test user
+  const hasInitialized = useRef(false);
+
+  // Calculate display values
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
 
   useEffect(() => {
-    if (activeUser && game && !sessionId) {
+    if (activeUser && game && !sessionId && !hasInitialized.current) {
+      hasInitialized.current = true;
       const startSession = async () => {
         try {
           const res = await fetch(
@@ -44,14 +49,19 @@ const GameTimerPage: React.FC = () => {
           const data = await res.json();
           setSessionId(data._id);
 
+          console.log("Initial session load:");
+          console.log("  Session data:", data);
+          console.log("  data.duration:", data.duration);
+
           // Load if session already exists
-          if (data.duration) {
+          if (data.duration !== undefined && data.duration !== null) {
             const existingMinutes = data.duration;
-            setHours(Math.floor(existingMinutes / 60));
-            setMinutes(existingMinutes % 60);
+            console.log("  Loading existing duration:", existingMinutes);
+            setTotalMinutes(existingMinutes);
             // Track the starting point for this session
             setSessionStartMinutes(existingMinutes);
           } else {
+            console.log("  New session, starting from 0");
             // New session, start from 0
             setSessionStartMinutes(0);
           }
@@ -70,13 +80,7 @@ const GameTimerPage: React.FC = () => {
     let interval: number | undefined;
     if (running) {
       interval = window.setInterval(() => {
-        setMinutes((prev) => {
-          if (prev === 59) {
-            setHours((h) => h + 1);
-            return 0;
-          }
-          return prev + 1;
-        });
+        setTotalMinutes((prev) => prev + 1);
       }, 1000); // 1 second = 1 minute
     }
     return () => {
@@ -90,6 +94,12 @@ const GameTimerPage: React.FC = () => {
   // Create/reuse session on start, update on stop
   const handleStartStop = async () => {
     if (!running) {
+      if (sessionId) {
+        setSessionStartMinutes(totalMinutes);
+        setRunning(true);
+        return;
+      }
+
       // Get or create session
       try {
         const res = await fetch(
@@ -108,10 +118,9 @@ const GameTimerPage: React.FC = () => {
         setSessionId(data._id);
 
         // Load if session already exists
-        if (data.duration) {
+        if (data.duration !== undefined && data.duration !== null) {
           const existingMinutes = data.duration;
-          setHours(Math.floor(existingMinutes / 60));
-          setMinutes(existingMinutes % 60);
+          setTotalMinutes(existingMinutes);
           // Track the starting point for this session
           setSessionStartMinutes(existingMinutes);
         } else {
@@ -127,8 +136,12 @@ const GameTimerPage: React.FC = () => {
       // Update session with time played in this session
       if (!sessionId) return alert("No session to update");
       try {
-        const currentTotalMinutes = hours * 60 + minutes;
-        const sessionDuration = currentTotalMinutes - sessionStartMinutes;
+        const sessionDuration = totalMinutes - sessionStartMinutes;
+
+        console.log("Stopping timer:");
+        console.log("  totalMinutes:", totalMinutes);
+        console.log("  sessionStartMinutes:", sessionStartMinutes);
+        console.log("  sessionDuration (sending to backend):", sessionDuration);
 
         const res = await fetch(
           `http://localhost:3001/api/sessions/${sessionId}`,
@@ -142,6 +155,8 @@ const GameTimerPage: React.FC = () => {
           }
         );
         if (!res.ok) throw new Error("Failed to update session");
+        const updatedData = await res.json();
+        console.log("Updated session data:", updatedData);
         setRunning(false);
       } catch (err) {
         alert("Could not stop session: " + (err as Error).message);
