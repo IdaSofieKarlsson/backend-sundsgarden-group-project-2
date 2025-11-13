@@ -138,7 +138,6 @@ export const getSessionsByGame = async (req, res) => {
   }
 };
 
-// src/controllers/sessionController.js
 
 
 export const getPlaytimePerGame = async (req, res) => {
@@ -149,6 +148,7 @@ export const getPlaytimePerGame = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ message: "Invalid userId" });
     }
+
     const objectUserId = new mongoose.Types.ObjectId(userId);
 
     const sessions = await Session.find({ userId: objectUserId });

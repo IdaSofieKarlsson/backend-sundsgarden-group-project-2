@@ -16,8 +16,9 @@ export default function UserOverviewPage() {
   const { id } = useParams();
   const { setActiveUser } = useUser();
 
-  const [user, setUser] = useState<User>();
 
+  const [user, setUser] = useState<User>();
+  
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/users/${id}`)
       .then((res) => res.json())
@@ -52,7 +53,7 @@ export default function UserOverviewPage() {
       </div>
 
       <div className="chart-grid">
-        <HorizontalBarChart/>
+        <HorizontalBarChart userId={id!} />
         <GameProgressList />
         <GameScatterChart />
         <UserActivityLineChart />
