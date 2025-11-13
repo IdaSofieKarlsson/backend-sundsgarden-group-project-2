@@ -280,3 +280,80 @@ export const getMinutesPerGame = async (req, res) => {
     res.status(500).json({ message: "Error fetching minutes per game", error });
   }
 };
+
+// Get user activity data for line chart (daily playtime per user per game for last 7 days)
+export const getUserActivityByGame = async (req, res) => {
+  try {
+    const Game = (await import("../models/gameModel.js")).default;
+    const User = (await import("../models/userModel.js")).default;
+
+    const games = await Game.find();
+    const chartData = [];
+    const colors = ["#808080", "#a9a9a9", "#c0c0c0", "#d3d3d3", "#e0e0e0"];
+
+    for (const game of games) {
+      const sessions = await Session.find({ gameId: game._id });
+      const userIds = [...new Set(sessions.map((s) => s.userId.toString()))];
+      const users = [];
+
+      for (let i = 0; i < userIds.length; i++) {
+        const userId = userIds[i];
+        const user = await User.findById(userId);
+
+        if (!user) {
+          continue;
+        }
+
+        // Get daily data for last 7 days
+        const dailyData = [];
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+
+        for (let day = 1; day <= 7; day++) {
+          const dayDate = new Date(today);
+          dayDate.setDate(today.getDate() - (7 - day));
+          dayDate.setHours(0, 0, 0, 0);
+
+          const nextDay = new Date(dayDate);
+          nextDay.setDate(dayDate.getDate() + 1);
+
+          const daySessions = await Session.find({
+            userId: userId,
+            gameId: game._id,
+            endTime: {
+              $gte: dayDate,
+              $lt: nextDay,
+            },
+          });
+
+          const totalMinutes = daySessions.reduce(
+            (sum, session) => sum + (session.duration || 0),
+            0
+          );
+
+          dailyData.push({
+            day: day,
+            minutes: totalMinutes,
+          });
+        }
+
+        users.push({
+          userId: userId,
+          userName: `${user.firstName} ${user.lastName}`,
+          dailyData: dailyData,
+          color: colors[i % colors.length],
+        });
+      }
+
+      chartData.push({
+        gameName: game.title,
+        users: users,
+      });
+    }
+
+    res.status(200).json(chartData);
+  } catch (error) {
+    console.error("Error fetching user activity:", error);
+    res.status(500).json({ message: "Error fetching user activity", error });
+  }
+};
