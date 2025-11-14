@@ -136,3 +136,53 @@ export const getSessionsByGame = async (req, res) => {
     res.status(500).json({ message: "Error fetching sessions", error });
   }
 };
+
+// Get total play time (sum of all durations) for a specific user
+export const getTotalTimeByUser = async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ message: "Missing userId query parameter" });
+    }
+
+    // Find all sessions for that user
+    // Make sure 'duration' is the field in your DB model
+    const sessions = await Session.find({ userId }).lean();
+
+    // If no sessions, return zero
+    if (!sessions || sessions.length === 0) {
+      return res.status(200).json({
+        userId,
+        totalSeconds: 0,
+        perGame: [],
+      });
+    }
+
+    // Sum durations (use 0 if duration is missing)
+    const totalSeconds = sessions.reduce(
+      (sum, s) => sum + (typeof s.duration === "number" ? s.duration : 0),
+      0
+    );
+
+    // Optional: compute per-game totals (gameId + totalSeconds)
+    const perGameMap = sessions.reduce((acc, s) => {
+      const gid = String(s.gameId);
+      acc[gid] = (acc[gid] || 0) + (typeof s.duration === "number" ? s.duration : 0);
+      return acc;
+    }, {});
+    const perGame = Object.entries(perGameMap).map(([gameId, seconds]) => ({
+      gameId,
+      totalSeconds: seconds,
+    }));
+
+    res.status(200).json({
+      userId,
+      totalSeconds,
+      perGame,
+    });
+  } catch (error) {
+    console.error("Error in getTotalTimeByUser:", error);
+    res.status(500).json({ message: "Error fetching total time", error: error.message || error });
+  }
+};
