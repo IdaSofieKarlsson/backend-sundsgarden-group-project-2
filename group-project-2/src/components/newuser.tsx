@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; 
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import API_BASE_URL from "../api";
@@ -18,10 +18,12 @@ const TotalTimeDashboard: React.FC = () => {
   //Fetch data from backend
   useEffect(() => {
     const fetchTotalTime = async () => {
-    if (!activeUser?._id) return; // wait until user is selected
+      if (!activeUser?._id) return; // wait until user is selected
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/sessions/total-time?userId=${activeUser._id}`);
+        const response = await fetch(
+          `${API_BASE_URL}/api/sessions/total-time?userId=${activeUser._id}`
+        );
         if (!response.ok) {
           const text = await response.text();
           console.error("Total time fetch failed:", response.status, text);
@@ -30,13 +32,13 @@ const TotalTimeDashboard: React.FC = () => {
         const data: TotalTimeResponse = await response.json();
         setTotalTime(data.totalSeconds ?? 0);
       } catch (error) {
-        console.error('Error fetching total time:', error);
+        console.error("Error fetching total time:", error);
       }
     };
 
     fetchTotalTime();
   }, [activeUser]);
-  
+
   const handleChoosePlayer = () => {
     console.log("Choose new player clicked");
     navigate("/users");
@@ -58,7 +60,6 @@ const TotalTimeDashboard: React.FC = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        minHeight: "100vh",
         padding: "40px",
         backgroundColor: "#f5f5f5",
         fontFamily: "Arial, sans-serif",
@@ -105,7 +106,7 @@ const TotalTimeDashboard: React.FC = () => {
           display: "flex",
           gap: "40px",
           width: "100%",
-          maxWidth: "900px",
+          maxWidth: "500px",
           justifyContent: "center",
         }}
       >
@@ -115,12 +116,12 @@ const TotalTimeDashboard: React.FC = () => {
           style={{
             flex: 1,
             maxWidth: "400px",
-            height: "250px",
+            height: "150px",
             backgroundColor: "#6b6b6b",
             border: "4px solid #000",
             borderRadius: "10px",
             color: "white",
-            fontSize: "32px",
+            fontSize: "24px",
             fontWeight: "bold",
             cursor: "pointer",
             transition: "all 0.3s ease",
@@ -146,12 +147,12 @@ const TotalTimeDashboard: React.FC = () => {
           style={{
             flex: 1,
             maxWidth: "400px",
-            height: "250px",
+            height: "150px",
             backgroundColor: "#6b6b6b",
             border: "4px solid #000",
             borderRadius: "10px",
             color: "white",
-            fontSize: "32px",
+            fontSize: "24px",
             fontWeight: "bold",
             cursor: "pointer",
             transition: "all 0.3s ease",

@@ -189,7 +189,7 @@ const MinutesPerGameChart: React.FC = () => {
       <div
         style={{
           backgroundColor: "#d9d9d9",
-          padding: "5px 5px",
+          padding: "5px 5px 15px 5px",
           borderRadius: "12px",
           boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
           width: "100%",
@@ -204,6 +204,17 @@ const MinutesPerGameChart: React.FC = () => {
           }}
         >
           <canvas ref={chartRef}></canvas>
+        </div>
+        <div
+          style={{
+            fontSize: "14px",
+            fontWeight: "bold",
+            color: "#000000",
+            textAlign: "center",
+            marginTop: "1px",
+          }}
+        >
+          Amount of minutes played per day by all
         </div>
       </div>
     </div>

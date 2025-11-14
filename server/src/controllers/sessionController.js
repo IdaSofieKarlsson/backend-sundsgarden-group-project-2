@@ -291,54 +291,79 @@ export const getUserActivityByGame = async (req, res) => {
     const chartData = [];
     const colors = ["#808080", "#a9a9a9", "#c0c0c0", "#d3d3d3", "#e0e0e0"];
 
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 6);
+    sevenDaysAgo.setHours(0, 0, 0, 0);
+
     for (const game of games) {
-      const sessions = await Session.find({ gameId: game._id });
-      const userIds = [...new Set(sessions.map((s) => s.userId.toString()))];
+      const userActivity = await Session.aggregate([
+        {
+          $match: {
+            gameId: game._id,
+            endTime: { $gte: sevenDaysAgo, $lte: today },
+          },
+        },
+        {
+          $project: {
+            userId: 1,
+            duration: 1,
+            dayOfWeek: {
+              $dateDiff: {
+                startDate: sevenDaysAgo,
+                endDate: "$endTime",
+                unit: "day",
+              },
+            },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              userId: "$userId",
+              day: "$dayOfWeek",
+            },
+            totalMinutes: { $sum: "$duration" },
+          },
+        },
+        {
+          $group: {
+            _id: "$_id.userId",
+            dailyData: {
+              $push: {
+                day: "$_id.day",
+                minutes: "$totalMinutes",
+              },
+            },
+          },
+        },
+      ]);
+
       const users = [];
 
-      for (let i = 0; i < userIds.length; i++) {
-        const userId = userIds[i];
-        const user = await User.findById(userId);
+      for (let i = 0; i < userActivity.length; i++) {
+        const activity = userActivity[i];
+        const user = await User.findById(activity._id);
 
         if (!user) {
           continue;
         }
 
-        // Get daily data for last 7 days
+        const dailyDataMap = new Map(
+          activity.dailyData.map((d) => [d.day, d.minutes])
+        );
+
         const dailyData = [];
-        const today = new Date();
-        today.setHours(23, 59, 59, 999);
-
-        for (let day = 1; day <= 7; day++) {
-          const dayDate = new Date(today);
-          dayDate.setDate(today.getDate() - (7 - day));
-          dayDate.setHours(0, 0, 0, 0);
-
-          const nextDay = new Date(dayDate);
-          nextDay.setDate(dayDate.getDate() + 1);
-
-          const daySessions = await Session.find({
-            userId: userId,
-            gameId: game._id,
-            endTime: {
-              $gte: dayDate,
-              $lt: nextDay,
-            },
-          });
-
-          const totalMinutes = daySessions.reduce(
-            (sum, session) => sum + (session.duration || 0),
-            0
-          );
-
+        for (let day = 0; day < 7; day++) {
           dailyData.push({
-            day: day,
-            minutes: totalMinutes,
+            day: day + 1,
+            minutes: dailyDataMap.get(day) || 0,
           });
         }
 
         users.push({
-          userId: userId,
+          userId: activity._id.toString(),
           userName: `${user.firstName} ${user.lastName}`,
           dailyData: dailyData,
           color: colors[i % colors.length],
