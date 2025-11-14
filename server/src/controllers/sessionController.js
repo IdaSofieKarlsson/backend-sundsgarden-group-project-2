@@ -44,8 +44,8 @@ export const getOrCreateSession = async (req, res) => {
       .json({ message: "Error getting or creating session", error });
   }
 };
-
-/*export const createSession = async (req, res) => {
+/*
+export const createSession = async (req, res) => {
   const sessionSchema = z.object({
     userId: z.string().length(24, "Invalid userId format"),
     gameId: z.string().length(24, "Invalid gameId format"),
@@ -74,8 +74,8 @@ export const getOrCreateSession = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Error creating session", error });
   }
-};*/
-
+};
+*/
 // Update an existing session by adding to its duration
 export const updateSession = async (req, res) => {
   const updateSchema = z.object({
@@ -174,5 +174,92 @@ export const getPlaytimePerGame = async (req, res) => {
   } catch (error) {
     console.error("Error fetching playtime data:", error);
     res.status(500).json({ message: "Error fetching playtime data", error });
+  }
+};
+
+// Get game statistics showing all users' play frequency and average time
+export const getGameUserOverview = async (req, res) => {
+  try {
+    const { gameId } = req.params;
+    
+    console.log("gameId from params:", gameId);
+
+    if (!mongoose.Types.ObjectId.isValid(gameId)) {
+      return res.status(400).json({ message: "Invalid gameId" });
+    }
+
+    const objectGameId = new mongoose.Types.ObjectId(gameId);
+
+    // Aggregate sessions by user for this specific game
+    const userStats = await Session.aggregate([
+      {
+        // Filter sessions for this game only
+        $match: { gameId: objectGameId }
+      },
+      {
+        // Group by userId to get stats per user
+        $group: {
+          _id: "$userId",
+          totalSessions: { $sum: 1 }, // Count number of sessions
+          totalMinutes: { $sum: "$duration" } // Sum all durations in minutes
+        }
+      },
+      {
+        // Calculate average minutes per session
+        $addFields: {
+          times: "$totalSessions", // Number of times played
+          timeMinutes: { 
+            $cond: {
+              if: { $gt: ["$totalSessions", 0] },
+              then: { $round: [{ $divide: ["$totalMinutes", "$totalSessions"] }, 0] },
+              else: 0
+            }
+          }
+        }
+      },
+      {
+        // Lookup user information
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "userInfo"
+        }
+      },
+      {
+        // Unwind user info array
+        $unwind: {
+          path: "$userInfo",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        // Project final structure
+        $project: {
+          _id: 0,
+          userId: "$_id",
+          times: 1,
+          timeMinutes: 1,
+          totalMinutes: 1, // Include for debugging
+          userName: {
+            $concat: [
+              { $ifNull: ["$userInfo.firstName", "Unknown"] },
+              " ",
+              { $ifNull: ["$userInfo.lastName", ""] }
+            ]
+          }
+        }
+      },
+      {
+        // Sort by times played
+        $sort: { times: -1 }
+      }
+    ]);
+
+    console.log("User stats aggregated:", userStats);
+    res.status(200).json(userStats);
+  } catch (error) {
+    console.error("Error fetching game user overview:", error);
+    res.status(500).json({ message: "Error fetching game user overview", error });
   }
 };

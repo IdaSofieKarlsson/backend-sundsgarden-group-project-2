@@ -1,104 +1,137 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as Chart from 'chart.js';
 
-// TypeScript interfaces
 interface GameData {
+  userId: string;
   times: number;
   timeMinutes: number;
-  userName?: string;
+  userName: string;
 }
 
-interface ChartData {
-  gameName: string;
-  data: GameData[];
+interface Game {
+  _id: string;
+  title: string;  // Changed to match your API
+  image: string;
 }
 
 const GameScatterChart: React.FC = () => {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstanceRef = useRef<Chart.Chart | null>(null);
-  const [selectedGame, setSelectedGame] = useState<string>('Game 1');
-  const [chartData, _setChartData] = useState<ChartData[]>([ //möjligtvis använder setChartData senare i koden
-    {
-      gameName: 'Game 1',
-      data: [
-        { times: 2, timeMinutes: 34, userName: 'User 1' },
-        { times: 3, timeMinutes: 17, userName: 'User 2' },
-        { times: 2, timeMinutes: 21, userName: 'User 3' },
-        { times: 3, timeMinutes: 30, userName: 'User 4' },
-        { times: 4, timeMinutes: 30, userName: 'User 5' },
-        { times: 5, timeMinutes: 43, userName: 'User 6' },
-        { times: 6, timeMinutes: 26, userName: 'User 7' },
-        { times: 5, timeMinutes: 37, userName: 'User 8' },
-      ]
-    },
-    {
-      gameName: 'Game 2',
-      data: [
-        { times: 3, timeMinutes: 25, userName: 'User 1' },
-        { times: 4, timeMinutes: 35, userName: 'User 2' },
-        { times: 5, timeMinutes: 45, userName: 'User 3' },
-        { times: 11, timeMinutes: 17, userName: 'User 4'}
-      ]
-    },
-    {
-      gameName: 'Game 3',
-      data: [
-        { times: 2, timeMinutes: 15, userName: 'User 1' },
-        { times: 6, timeMinutes: 40, userName: 'User 2' }
-      ]
-    },
-    {
-        gameName: 'Game 4',
-        data: [
-            { times: 2, timeMinutes:17, userName: 'User 5'},
-            { times: 6, timeMinutes: 40, userName: 'User 6' },
-            { times: 5, timeMinutes: 31, userName: 'User 7' },
-            { times: 2, timeMinutes: 12, userName: 'User 8' }
-        ]
-    }
-  ]);
+  const [selectedGameId, setSelectedGameId] = useState<string>('');
+  const [games, setGames] = useState<Game[]>([]);
+  const [chartData, setChartData] = useState<GameData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Fetch data from backend - uncomment when ready
-  /*
+  // Fetch available games on component mount
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        console.log('Fetching games...');
+        const response = await fetch('http://localhost:3001/api/games');
+        console.log('Games response status:', response.status);
+        
+        if (!response.ok) throw new Error('Failed to fetch games');
+        
+        const data: Game[] = await response.json();
+        console.log('Games fetched:', data);
+        setGames(data);
+        
+        if (data.length > 0) {
+          console.log('Setting default game:', data[0]._id);
+          setSelectedGameId(data[0]._id);
+        } else {
+          console.warn('No games found');
+          setError('No games available');
+        }
+      } catch (err) {
+        console.error('Error fetching games:', err);
+        setError('Failed to load games: ' + (err as Error).message);
+      }
+    };
+
+    fetchGames();
+  }, []);
+
+  // Fetch chart data when game selection changes
   useEffect(() => {
     const fetchChartData = async () => {
+      if (!selectedGameId) {
+        console.log('No game selected yet');
+        return;
+      }
+
       try {
-        const response = await fetch('/api/game-stats');
-        const data: ChartData[] = await response.json();
+        setLoading(true);
+        console.log('Fetching chart data for game:', selectedGameId);
+        
+        const url = `http://localhost:3001/api/sessions/game-overview/${selectedGameId}`;
+        console.log('Fetching from URL:', url);
+        
+        const response = await fetch(url);
+        console.log('Chart data response status:', response.status);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Response error:', errorText);
+          throw new Error(`Failed to fetch chart data: ${response.status} - ${errorText}`);
+        }
+        
+        const data: GameData[] = await response.json();
+        console.log('Chart data fetched:', data);
+        console.log('Number of users:', data.length);
+        
         setChartData(data);
-      } catch (error) {
-        console.error('Error fetching chart data:', error);
+        setLoading(false);
+        
+        if (data.length === 0) {
+          console.warn('No session data for this game');
+        }
+      } catch (err) {
+        console.error('Error fetching chart data:', err);
+        setError('Failed to load chart data: ' + (err as Error).message);
+        setLoading(false);
       }
     };
 
     fetchChartData();
-  }, []);
-  */
+  }, [selectedGameId]);
 
+  // Render chart when data changes
   useEffect(() => {
-    if (chartRef.current) {
+    console.log('Chart render effect triggered');
+    console.log('Chart data length:', chartData.length);
+    console.log('Chart ref current:', chartRef.current);
+    
+    if (chartRef.current && chartData.length > 0) {
       const ctx = chartRef.current.getContext('2d');
       
-      if (!ctx) return;
+      if (!ctx) {
+        console.error('Could not get canvas context');
+        return;
+      }
 
-      // Destroy existing chart
+      console.log('Destroying old chart...');
       if (chartInstanceRef.current) {
         chartInstanceRef.current.destroy();
       }
 
-      // Get data for selected game
-      const selectedGameData = chartData.find(game => game.gameName === selectedGame);
-      const scatterData = selectedGameData?.data.map(point => ({
+      const scatterData = chartData.map(point => ({
         x: point.times,
         y: point.timeMinutes
-      })) || [];
+      }));
+      
+      console.log('Scatter data:', scatterData);
 
-      // Create new chart
+      const selectedGame = games.find(g => g._id === selectedGameId);
+      console.log('Selected game:', selectedGame);
+
+      console.log('Creating new chart...');
       chartInstanceRef.current = new Chart.Chart(ctx, {
         type: 'scatter',
         data: {
           datasets: [{
-            label: selectedGame,
+            label: selectedGame?.title || 'Game',  // Changed to 'title'
             data: scatterData,
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
             borderColor: 'rgba(0, 0, 0, 1)',
@@ -118,11 +151,11 @@ const GameScatterChart: React.FC = () => {
               callbacks: {
                 label: function(context: any) {
                   const dataIndex = context.dataIndex;
-                  const gameData = selectedGameData?.data[dataIndex];
+                  const userData = chartData[dataIndex];
                   return [
-                    `Times: ${context.parsed.x}`,
-                    `Minutes: ${context.parsed.y}`,
-                    gameData?.userName ? `User: ${gameData.userName}` : ''
+                    `User: ${userData.userName}`,
+                    `Times played: ${userData.times}`,
+                    `Avg minutes: ${userData.timeMinutes}`
                   ];
                 }
               }
@@ -134,14 +167,13 @@ const GameScatterChart: React.FC = () => {
               position: 'bottom',
               title: {
                 display: true,
-                text: 'Times',
+                text: 'Times Played',
                 font: {
                   size: 18,
                   weight: 'bold'
                 }
               },
               min: 0,
-              max: 8,
               ticks: {
                 stepSize: 1,
                 font: {
@@ -156,14 +188,13 @@ const GameScatterChart: React.FC = () => {
             y: {
               title: {
                 display: true,
-                text: 'Time (minutes)',
+                text: 'Average Time (minutes)',
                 font: {
                   size: 18,
                   weight: 'bold'
                 }
               },
               min: 0,
-              max: 65,
               ticks: {
                 stepSize: 10,
                 font: {
@@ -178,14 +209,29 @@ const GameScatterChart: React.FC = () => {
           }
         }
       });
+      
+      console.log('Chart created successfully');
+    } else {
+      console.log('Cannot render chart - missing data or ref');
     }
 
     return () => {
       if (chartInstanceRef.current) {
+        console.log('Cleaning up chart');
         chartInstanceRef.current.destroy();
       }
     };
-  }, [selectedGame, chartData]);
+  }, [selectedGameId, chartData, games]);
+
+  if (error) {
+    return (
+      <div style={{ padding: '20px', color: 'red', textAlign: 'center' }}>
+        <h3>Error</h3>
+        <p>{error}</p>
+        <button onClick={() => window.location.reload()}>Reload Page</button>
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -206,7 +252,7 @@ const GameScatterChart: React.FC = () => {
         maxWidth: '1200px',
         width: '100%'
       }}>
-        {/* Chart Section */}
+
         <div style={{ flex: '1', position: 'relative', height: '500px' }}>
           <div style={{
             position: 'absolute',
@@ -215,8 +261,12 @@ const GameScatterChart: React.FC = () => {
             zIndex: 10
           }}>
             <select
-              value={selectedGame}
-              onChange={(e) => setSelectedGame(e.target.value)}
+              value={selectedGameId}
+              onChange={(e) => {
+                console.log('Game selection changed to:', e.target.value);
+                setSelectedGameId(e.target.value);
+              }}
+              disabled={loading || games.length === 0}
               style={{
                 padding: '10px 30px 10px 15px',
                 fontSize: '16px',
@@ -231,19 +281,47 @@ const GameScatterChart: React.FC = () => {
                 backgroundPosition: 'right 10px center'
               }}
             >
-              {chartData.map((game) => (
-                <option key={game.gameName} value={game.gameName}>
-                  {game.gameName}
-                </option>
-              ))}
+              {games.length === 0 ? (
+                <option>No games available</option>
+              ) : (
+                games.map((game) => (
+                  <option key={game._id} value={game._id}>
+                    {game.title}
+                  </option>
+                ))
+              )}
             </select>
           </div>
-          <canvas ref={chartRef}></canvas>
+          
+          {loading ? (
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%'
+            }}>
+              Loading chart data...
+            </div>
+          ) : chartData.length === 0 ? (
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+              color: '#666',
+              flexDirection: 'column',
+              gap: '10px'
+            }}>
+              <p>No session data available for this game</p>
+              <p style={{ fontSize: '14px' }}>Selected game ID: {selectedGameId}</p>
+            </div>
+          ) : (
+            <canvas ref={chartRef}></canvas>
+          )}
         </div>
       </div>
     </div>
   );
 };
-
 
 export default GameScatterChart;

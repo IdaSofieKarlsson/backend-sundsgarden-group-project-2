@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const gameSchema = new mongoose.Schema({
   gameId: Number,
-  name: String,
+  title: String,
 });
 
 const Game = mongoose.model("Game", gameSchema);
