@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Chart, registerables } from "chart.js";
 import type { ChartConfiguration } from "chart.js";
+
 Chart.register(...registerables);
 
 interface HorizontalBarChartProps {
@@ -9,48 +10,18 @@ interface HorizontalBarChartProps {
 
 const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({ userId }) => {
   const chartRef = useRef<HTMLCanvasElement | null>(null);
-  const chartInstanceRef = useRef<Chart | null>(null);
+  const chartInstanceRef = useRef<Chart<"bar", number[], string> | null>(null);
 
-  useEffect(() => {
-    if (!userId) return;
-
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3001/api/sessions/user-overview/${userId}`
-        );
-        const data = await response.json();
-        console.log("Fetched playtime data:", data);
-
-        if (chartInstanceRef.current) {
-          // Uppdatera chart med ny data
-          chartInstanceRef.current.data.labels = data.length
-            ? data.map((d: any) => d._id)
-            : ["No data"];
-          chartInstanceRef.current.data.datasets[0].data = data.length
-            ? data.map((d: any) => d.totalMinutes)
-            : [0];
-          chartInstanceRef.current.update();
-        }
-      } catch (error) {
-        console.error("Error fetching playtime data:", error);
-      }
-    };
-
-    fetchData();
-  }, [userId]);
-
+  // Initialize chart only once
   useEffect(() => {
     if (!chartRef.current) return;
     const ctx = chartRef.current.getContext("2d");
     if (!ctx) return;
 
-    if (chartInstanceRef.current) chartInstanceRef.current.destroy();
-
     const config: ChartConfiguration<"bar", number[], string> = {
       type: "bar",
       data: {
-        labels: ["Game 1", "Game 2", "Game 3", "Game 4"],
+        labels: [],
         datasets: [
           {
             label: "Minutes Played",
@@ -81,12 +52,45 @@ const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({ userId }) => {
     chartInstanceRef.current = new Chart(ctx, config);
 
     return () => {
-      if (chartInstanceRef.current) chartInstanceRef.current.destroy();
+      chartInstanceRef.current?.destroy();
     };
   }, []);
+
+  // Fetch data whenever userId changes
+  useEffect(() => {
+    if (!userId || !chartInstanceRef.current) return;
+
+    let isMounted = true;
+
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3001/api/sessions/user-overview/${userId}`
+        );
+        const data = await response.json();
+        console.log("Fetched playtime data:", data);
+
+        if (!isMounted) return;
+
+        const chart = chartInstanceRef.current!;
+        chart.data.labels = data.length ? data.map((d: any) => d._id) : ["No data"];
+        chart.data.datasets[0].data = data.length
+          ? data.map((d: any) => d.totalMinutes)
+          : [0];
+        chart.update();
+      } catch (error) {
+        console.error("Error fetching playtime data:", error);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userId]);
 
   return <canvas ref={chartRef}></canvas>;
 };
 
 export default HorizontalBarChart;
-
