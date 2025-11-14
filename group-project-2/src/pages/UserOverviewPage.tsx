@@ -16,17 +16,20 @@ export default function UserOverviewPage() {
   const { id } = useParams();
   const { setActiveUser } = useUser();
 
+
   const [user, setUser] = useState<User>();
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/users/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setUser(data);
-        setActiveUser(data);
-      })
-      .catch((err) => console.error("Error fetching users:", err));
-  });
+  if (!id) return;
+
+  fetch(`${API_BASE_URL}/api/users/${id}`)
+    .then(res => res.json())
+    .then(data => {
+      setUser(data);
+      setActiveUser(data);
+    })
+    .catch(err => console.error(err));
+  }, [id, setActiveUser]); // <--- important!
 
   return (
     <div className="user-overview-page">
@@ -52,7 +55,7 @@ export default function UserOverviewPage() {
       </div>
 
       <div className="chart-grid">
-        <HorizontalBarChart />
+        <HorizontalBarChart userId={id!} />
         <GameProgressList />
         <GameScatterChart />
         <UserActivityLineChart />
