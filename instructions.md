@@ -1,7 +1,11 @@
 ## Instructions for starting project
-Make sure that you are in the correct fold. Type cd and the folder name in the terminal
+Make sure that you are in the correct fold. Type cd and the folder name in the terminal. 
+Start the server, backend first, then the frontend, group-project-2. 
+
+ - cd server                takes you to the correct folder
+ - npm run dev              starts the backend
  - cd group-project-2       takes you to the correct folder
- - npm run dev              starts the project
+ - npm run dev              starts the frontend
  - http://localhost:5173/   is the address 
 
 ## Error handling
