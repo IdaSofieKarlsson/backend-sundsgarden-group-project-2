@@ -18,16 +18,18 @@ export default function UserOverviewPage() {
 
 
   const [user, setUser] = useState<User>();
-  
+
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/users/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setUser(data);
-        setActiveUser(data);
-      })
-      .catch((err) => console.error("Error fetching users:", err));
-  });
+  if (!id) return;
+
+  fetch(`${API_BASE_URL}/api/users/${id}`)
+    .then(res => res.json())
+    .then(data => {
+      setUser(data);
+      setActiveUser(data);
+    })
+    .catch(err => console.error(err));
+  }, [id, setActiveUser]); // <--- important!
 
   return (
     <div className="user-overview-page">
