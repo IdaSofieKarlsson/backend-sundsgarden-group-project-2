@@ -5,7 +5,6 @@ import cors from "cors";
 import userRouter from "./src/routes/userRoutes.js";
 import gameRouter from "./src/routes/gameRoutes.js";
 import sessionRouter from "./src/routes/sessionRoutes.js";
-import leaderboardRouter from "./src/routes/leaderboardRoutes.js";
 
 dotenv.config();
 
@@ -25,7 +24,6 @@ app.use(
 app.use("/api/games", gameRouter);
 app.use("/api/users", userRouter);
 app.use("/api/sessions", sessionRouter);
-app.use("/api/leaderboard", leaderboardRouter);
 
 mongoose
   .connect(process.env.MONGO_URI)
